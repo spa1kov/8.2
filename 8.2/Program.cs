@@ -1,11 +1,23 @@
-﻿using System;
 
-abstract class Money
+using System;
+
+interface Money
+{
+    Money Add(Money money);
+    Money Subtract(Money money);
+    Money Multiply(int multiplier);
+    Money Divide(int divisor);
+    bool IsGreaterThan(Money money);
+    bool IsLessThan(Money money);
+    bool IsEqualTo(Money money);
+}
+
+abstract class BaseMoney : Money
 {
     public int Rubs { get; set; }
     public int Kops { get; set; }
 
-    public Money(int rubs, int kops)
+    public BaseMoney(int rubs, int kops)
     {
         Rubs = rubs;
         Kops = kops;
@@ -20,7 +32,7 @@ abstract class Money
     public abstract bool IsEqualTo(Money money);
 }
 
-class RussianRubles : Money
+class RussianRubles : BaseMoney
 {
     public RussianRubles(int rubs, int kops) : base(rubs, kops)
     {
@@ -28,8 +40,9 @@ class RussianRubles : Money
 
     public override Money Add(Money money)
     {
-        int totalRubs = Rubs + money.Rubs;
-        int totalKops = Kops + money.Kops;
+        RussianRubles rubles = (RussianRubles)money;
+        int totalRubs = Rubs + rubles.Rubs;
+        int totalKops = Kops + rubles.Kops;
         if (totalKops >= 100)
         {
             totalRubs += totalKops / 100;
@@ -40,11 +53,12 @@ class RussianRubles : Money
 
     public override Money Subtract(Money money)
     {
-        int totalRubs = Rubs - money.Rubs;
-        int totalKops = Kops - money.Kops;
+        RussianRubles rubles = (RussianRubles)money;
+        int totalRubs = Rubs - rubles.Rubs;
+        int totalKops = Kops - rubles.Kops;
         if (totalKops < 0)
         {
-            totalRubs -= 1;
+            totalRubs--;
             totalKops += 100;
         }
         return new RussianRubles(totalRubs, totalKops);
@@ -71,9 +85,10 @@ class RussianRubles : Money
 
     public override bool IsGreaterThan(Money money)
     {
-        if (Rubs > money.Rubs)
+        RussianRubles rubles = (RussianRubles)money;
+        if (Rubs > rubles.Rubs)
             return true;
-        else if (Rubs == money.Rubs && Kops > money.Kops)
+        else if (Rubs == rubles.Rubs && Kops > rubles.Kops)
             return true;
         else
             return false;
@@ -81,9 +96,10 @@ class RussianRubles : Money
 
     public override bool IsLessThan(Money money)
     {
-        if (Rubs < money.Rubs)
+        RussianRubles rubles = (RussianRubles)money;
+        if (Rubs < rubles.Rubs)
             return true;
-        else if (Rubs == money.Rubs && Kops < money.Kops)
+        else if (Rubs == rubles.Rubs && Kops < rubles.Kops)
             return true;
         else
             return false;
@@ -91,7 +107,8 @@ class RussianRubles : Money
 
     public override bool IsEqualTo(Money money)
     {
-        return Rubs == money.Rubs && Kops == money.Kops;
+        RussianRubles rubles = (RussianRubles)money;
+        return Rubs == rubles.Rubs && Kops == rubles.Kops;
     }
 
     public override string ToString()
@@ -138,7 +155,8 @@ class Program
                 break;
             case 3:
                 Console.WriteLine("Введите множитель:");
-                int multiplier = int.Parse(Console.ReadLine()); Console.WriteLine("Результат умножения: " + money1.Multiply(multiplier));
+                int multiplier = int.Parse(Console.ReadLine());
+                Console.WriteLine("Результат умножения: " + money1.Multiply(multiplier));
                 break;
             case 4:
                 Console.WriteLine("Введите делитель:");
